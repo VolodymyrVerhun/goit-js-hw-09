@@ -33,3 +33,22 @@ img {
   
   text-align: center;
 }
+
+
+.field {
+  display: inline-grid;
+  justify-items: center;
+  font-size: 12px;
+  padding-top: 20px;
+  margin-right: 5px;
+
+}
+
+.label {
+  text-transform: uppercase;
+}
+
+.value {
+  font-size: 35px;
+  font-weight: 400;
+}
