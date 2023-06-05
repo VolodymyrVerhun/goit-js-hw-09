@@ -63,6 +63,15 @@ flatpickr(calendarEl, {
                 minuteEl.textContent = addLeadingZero(minutes);
                 secondEl.textContent = addLeadingZero(seconds);
 
+                if(deltadate <= 0) {
+                    clearInterval();
+                    dayEl.textContent = '00';
+                    hourEl.textContent = '00';
+                    minuteEl.textContent = '00';
+                    secondEl.textContent = '00';
+                    return;
+                }
+
             }, 1000);
         })
     } else {
