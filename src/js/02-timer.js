@@ -34,7 +34,18 @@ function convertMs(ms) {
         return { days, hours, minutes, seconds };
       }
 
+function startTimer (selectedDates) {
+    btnEl.disabled = false;
+    btnEl.addEventListener('click', () => {
+         updateTimer(selectedDates);
+          
+    })
+};
 
+function showAlert ( ) {
+    btnEl.disabled = true;
+    return Notiflix.Notify.failure('Please choose a date in the future');
+};
 
 // функція з бібліотеки
 flatpickr(calendarEl, {
@@ -43,41 +54,48 @@ flatpickr(calendarEl, {
     defaultDate: new Date(),
     minuteIncrement: 1,
     onClose(selectedDates) {
-        let currentTime = new Date();
+        let currentTime = Date.now();
     // перевірка на час
-    if(selectedDates[0].getTime() > currentTime.getTime()) {
-        btnEl.disabled = false;
-        btnEl.addEventListener('click', () => {
-            
-            setInterval(() => {
-
-                let nowDate = Date.now();
-                let targetDate = selectedDates[0].getTime();
-                let deltadate = targetDate - nowDate;
-
-                
-                const { days, hours, minutes, seconds } = convertMs(deltadate);
-              
-                dayEl.textContent = addLeadingZero(days);
-                hourEl.textContent = addLeadingZero(hours);
-                minuteEl.textContent = addLeadingZero(minutes);
-                secondEl.textContent = addLeadingZero(seconds);
-
-                if(deltadate <= 0) {
-                    clearInterval();
-                    dayEl.textContent = '00';
-                    hourEl.textContent = '00';
-                    minuteEl.textContent = '00';
-                    secondEl.textContent = '00';
-                    return;
-                }
-
-            }, 1000);
-        })
+    if(selectedDates[0].getTime() > currentTime) {
+                startTimer (selectedDates);
     } else {
-        btnEl.disabled = true;
-        return Notiflix.Notify.failure('Please choose a date in the future');
-        
+        showAlert (); 
     }
     },
   });
+
+  let timerId = null;
+  function updateTimer (selectedDates) {
+    
+    const deltadate = getDeltaDate (selectedDates);
+        
+    const datesObj = convertMs(deltadate);
+
+    showTimer(datesObj);
+       
+   
+    clearInterval(timerId);
+    if(deltadate <= 0) {
+        showTimer( { days: 0, hours: 0, minutes: 0, seconds: 0 } );
+        return;
+    };
+
+    timerId = setTimeout( () => { 
+    updateTimer(selectedDates)}, 1000)
+  };
+
+  function showTimer ({ days, hours, minutes, seconds }) {
+    dayEl.textContent = addLeadingZero(days);
+    hourEl.textContent = addLeadingZero(hours);
+    minuteEl.textContent = addLeadingZero(minutes);
+    secondEl.textContent = addLeadingZero(seconds);
+  };
+
+function getDeltaDate (selectedDates) {
+    const nowDate = Date.now();
+    const targetDate = selectedDates[0].getTime();
+    const deltadate = targetDate - nowDate;
+    return deltadate;
+};
+
+  
